@@ -127,7 +127,7 @@ class Cabinet(object):
         """traverses the branch of cubbys starting with the cubby passed as an argument to match the choice incept code"""
         candidates = self.flatlist_cubbies(someCubby)
 
-<<<<<<< HEAD
+
 	try:
 
 	    for x in candidates: 
@@ -139,22 +139,6 @@ class Cabinet(object):
 
 	except:
 	    pass
-
-
-           
-          
-=======
-        for x in self.flatlist_cubbies(someCubby): 
-            print id(x) 
-            if id(x) == IDsearch:
-                return x 
-
-        return someCubby
-
-
-
-
->>>>>>> 8a83d8fb6e7371adb8a8b9d0bf4c0263573d4112
 
     def find_cubby(self):
         """ uses regex etc. to choose a cubby based on search criteria """
