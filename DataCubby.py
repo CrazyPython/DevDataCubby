@@ -2,8 +2,8 @@
 # Datacubby is generally a module for learning how to code objects used in 
 # outlining applications like task managers, and other heirarchical, parent:child data structures
 #
-# version series 006 is focused on learning how to create cubby fields 
-# version 0062 is focused on implementing user created fields in each "cubby" or record
+#  version series 006 is focused on learning how to create cubby fields 
+#  version 0062 is focused on implementing user created fields in each "cubby" or record
 #  basically this is an attribute, a dictionary in the Cubby Class, called userFields.
 #  my other objective for this class is to implement a sum_customfield method, 
 #  that can be used as a value in the userField of a "cubby" that will return 
@@ -31,15 +31,15 @@ class Cubby(object):
         self.parent = parentCubby
         self.children = {}
         self.userFields = {}
-        
+
     def add_child(self, cubbykey):
         self.children[cubbykey] = Cubby(self, cubbykey)
-        
+
     def present_children(self):
         ''' Allows other classes to access children for presentation etc. '''
         for child in self.children.values():
             yield child
- 
+
     def change_parent(self, candidate, validlist):
         ''' tests to be sure target parent exists before allowing change '''
         if candidate in validlist:
@@ -72,7 +72,7 @@ class Cubby(object):
         ''' Determines this cubbies current position in the heirarchy expressed as a postion number of the form x.xx.xx...'''
         pass
 
-            
+
 
     def __str__(self):
         rep = "NAME: " + str(self.keyname) +  " | TIMESTAMP: " + str(self.creationDate) + " | CubbyId: " + str(id(self))
@@ -83,9 +83,9 @@ class Cubby(object):
             for key in self.userFields:
                 rep += " |" + str(key) + ": " +  str(self.userFields.get(key, "n/a"))
         return rep
-            
 
-        
+
+
 class Cabinet(object):
     def __init__(self):
         ''' 
@@ -95,20 +95,20 @@ class Cabinet(object):
         self.rootCubby = Cubby( 'Root', 'Root')
         self.focusCubby = self.rootCubby # this cubby is used as the cursor
         self.userFieldsGlobal = [] # List of user defined Field Names. 
-        
+
     def open_cabinet(self, filename):
         '''persistence mechanism for loading from file object. Is set up to potentially allow grafting'''
         file = open(filename, 'rb')
         loadCubby = pickle.load(file)
         file.close()
         return loadCubby
-    
+
     def save_cabinet(self, curCub, filename):
         filename = filename +".cby"
         file = open(filename, 'wb')
         pickle.dump(curCub, file, -1)
         file.close()
-    
+
     def flatlist_cubbies(self, someCubby):
         ''' This function stores all the cubbies in a flattened list object sorted by parent cubby. '''
         AllDescendents = []
@@ -117,16 +117,17 @@ class Cabinet(object):
             if curCubby.children:
                 for x in curCubby.present_children():
                     masterlist(x)
-            
+
         masterlist(someCubby)
-    
+
         return AllDescendents
-        
-    
+
+
     def choose_cubby(self, someCubby, IDsearch):
         """traverses the branch of cubbys starting with the cubby passed as an argument to match the choice incept code"""
         candidates = self.flatlist_cubbies(someCubby)
 
+<<<<<<< HEAD
 	try:
 
 	    for x in candidates: 
@@ -142,13 +143,23 @@ class Cabinet(object):
 
            
           
+=======
+        for x in self.flatlist_cubbies(someCubby): 
+            print id(x) 
+            if id(x) == IDsearch:
+                return x 
 
-                
-   
+        return someCubby
+
+
+
+
+>>>>>>> 8a83d8fb6e7371adb8a8b9d0bf4c0263573d4112
+
     def find_cubby(self):
         """ uses regex etc. to choose a cubby based on search criteria """
         pass
-       
+
     def propogate_user_fields(self, usrfields, curCub):
         ''' Conforms all of the child cubby nodes of the calling object to the same user field names. '''
         for each in curCub.present_children():
@@ -199,9 +210,9 @@ def test():
     for y in sandbox.flatlist_cubbies(sandbox.rootCubby): print y    
     sandbox.save_cabinet(sandbox.rootCubby, 'Playground')
     return sandbox
-    
-    
-    
+
+
+
 
 # MAIN
 
@@ -209,3 +220,5 @@ if __name__ == "__main__":
     print "This is a module with classes for managing heirarchical data."
     print "if called as main, will generate a test suite with print output"
     test()
+
+# Test Git: I am testing my new git repository on Webfaction
