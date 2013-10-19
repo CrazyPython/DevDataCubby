@@ -1,21 +1,8 @@
-# Module: DataCubby VERSION 0064
+# Module: DataCubby 
 # Datacubby is generally a module for learning how to code objects used in 
-# outlining applications like task managers, and other heirarchical, parent:child data structures
+# outlining applications like task managers, and other heirarchical, 
+# parent:child data structures
 #
-#  version series 006 is focused on learning how to create cubby fields 
-#  version 0062 is focused on implementing user created fields in each "cubby" or record
-#  basically this is an attribute, a dictionary in the Cubby Class, called userFields.
-#  my other objective for this class is to implement a sum_customfield method, 
-#  that can be used as a value in the userField of a "cubby" that will return 
-#  the sum of that same field for the immediate descendent cubbies.  Values can 
-#  be cascaded up the heirarchy by the user, with this technique.  
-#  Once the summing function is implemented, it should be straightforward to do,
-#  AVG, MIN, MAX etc.  The sum field is special, in that by not type checking,
-#  it can work in the overridden ways that "+" can within Python.  This might be
-#  useful.
-#
-#  this version is focused on making Cabinet.choosecubby() work.
-
 
 
 from time import *
@@ -24,10 +11,11 @@ import pickle
 class Cubby(object):
     ''' Basic class containing core parent/child functionality '''
     def __init__(self, parentCubby, cubbyName):
-        self.incept = time() # provides source value for unique record number and basis for time funtionality in future versions
-        self.creationDate = strftime('%Y %m %d %H %M %S', (localtime(self.incept))) # human readable creation date string
-        self.keyname = cubbyName # same as the dictionary key in the parent cubby's "children dictionary"
-        self.mainfact = "" # the primary description of the data held in the cubby
+        self.incept = time() # basis for time funtionality in future versions
+        self.creationDate = strftime('%Y %m %d %H %M %S', (localtime(self.incept)))
+        # human readable creation date string
+        self.keyname = cubbyName # same as dictionary key in parent cubby's "children dictionary"
+        self.slugline = "" # the primary description of the data held in the cubby
         self.parent = parentCubby
         self.children = {}
         self.userFields = {}
@@ -36,9 +24,26 @@ class Cubby(object):
         self.children[cubbykey] = Cubby(self, cubbykey)
 
     def present_children(self):
-        ''' Allows other classes to access children for presentation etc. '''
+        ''' Streamlines recursive function calls from client classes that traverse heirarchy. '''
         for child in self.children.values():
             yield child
+
+    def reverse_traversal(self):
+        '''
+        Return a list that specifies the path of
+        dictionary keys from the root of the heirarchy
+        to "self".
+        '''
+
+        AllAncestors = [self.keyname]
+        def masterlist(curCubby):
+            AllAncestors.insert(0, curCubby.parent.keyname)
+            parentCubby = curCubby.parent
+            if parentCubby.parent:
+                masterlist(parentCubby)
+
+        masterlist(self)
+        return AllAncestors
 
     def change_parent(self, candidate, validlist):
         ''' tests to be sure target parent exists before allowing change '''
@@ -49,7 +54,10 @@ class Cubby(object):
             return "Invalid Parent, No change in parent cubby!"  # this needs to be turned into a try/except block
 
     def conform_userFields(self, masterList):
-        '''Conforms the keys for the user field names to the list common to all cubbies in file, retaining any salient data already there'''
+        '''
+	Conforms the keys for the user field names to the list common to all cubbies in file, 
+	retaining any salient data already there	
+	'''
         conformedFields = dict.fromkeys(masterList)
         oldUserData = self.userFields.copy() 
         conformedFields.update(oldUserData)
@@ -68,17 +76,13 @@ class Cubby(object):
             sum += y.userFields[fldname]
         return sum
 
-    def determine_position():
-        ''' Determines this cubbies current position in the heirarchy expressed as a postion number of the form x.xx.xx...'''
-        pass
-
 
 
     def __str__(self):
         rep = "NAME: " + str(self.keyname) +  " | TIMESTAMP: " + str(self.creationDate) + " | CubbyId: " + str(id(self))
         if self.children:
             rep += " **has children**"
-        rep += "\n MAINFACT: " + self.mainfact + "\n"
+        rep += "\n slugline: " + self.slugline + "\n"
         if self.userFields:
             for key in self.userFields:
                 rep += " |" + str(key) + ": " +  str(self.userFields.get(key, "n/a"))
@@ -158,7 +162,7 @@ def test():
     sandbox = Cabinet()
     sandbox.userFieldsGlobal.append('Cost Est')
     sandbox.propogate_user_fields(sandbox.userFieldsGlobal, sandbox.rootCubby)
-    sandbox.rootCubby.mainfact = "This is the Test Suite Generated main fact for the root cubby of sandbox."
+    sandbox.rootCubby.slugline = "This is the Test Suite Generated main fact for the root cubby of sandbox."
     sandbox.rootCubby.userFields['Cost Est'] = 20 
     print sandbox.rootCubby
     sandbox.userFieldsGlobal.append('Cost Actual')
